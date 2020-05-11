@@ -21,9 +21,7 @@ rm -rf ./plugins/redmine_oauth2_login/.git ./plugins/redmine_oauth2_login/test
 bundle install --without development test
 ```
 2. Restart the app
-```console
-touch /path/to/redmine/tmp/restart.txt
-```
+
 
 ### Configuration
 
