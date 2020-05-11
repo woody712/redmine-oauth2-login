@@ -2,9 +2,9 @@ module AccountControllerPatch
   def self.included(base)
     base.send(:include, InstanceMethods)
     base.class_eval do
-      # unloadable
-      # alias_method_chain :login, :oauth2
-      # alias_method_chain :logout, :oauth2
+      #unloadable
+      #alias_method_chain :login, :oauth2
+      #alias_method_chain :logout, :oauth2
     end
   end
 
@@ -106,11 +106,15 @@ module AccountControllerPatch
         end
         # Profile parse
         userDetails = JSON.parse(response.body)
-
+        
         # if "github".casecmp(params[:provider]) == 0
-        # Login
+        # github
         if userDetails && userDetails["id"]
           extract_user_details userDetails
+        # jaccount
+        elsif userDetails && userDetails["error"] && userDetails["error"] == "success"
+          puts userDetails["entities"][0]
+          extract_user_details userDetails["entities"][0]
         else
           # logger.info("#{userInfoUri} return #{response.body}")
           flash[:error] = l(:notice_unable_to_obtain_oauth2_credentials)
@@ -187,7 +191,7 @@ module AccountControllerPatch
 
     private
     def oauth2_username(userDetails)
-      for key in ["username", "login", "user", "name"] do
+      for key in ["username", "account", "login", "user", "name"] do
         if userDetails[key].present?
           return userDetails[key]
         end
@@ -206,19 +210,24 @@ module AccountControllerPatch
 
     private
     def oauth2_lastname(userDetails)
-      for key in ["lastname"] do
+      for key in ["lastname", "code"] do
         if userDetails[key].present?
           return userDetails[key]
         end
       end
-      return "OAuth2User"
+      return "lastname"
     end
 
     private
     def oauth2_email(userDetails)
-      for key in ["email", "fullname", "name", "username", "login", "user"] do
+      for key in ["email"] do
         if userDetails[key].present?
           return userDetails[key]
+        end
+      end
+      for key in ["account"] do
+        if userDetails[key].present?
+          return userDetails[key] + "@sjtu.edu.cn"
         end
       end
       return oauth2_username(userDetails) + "@email.error"
