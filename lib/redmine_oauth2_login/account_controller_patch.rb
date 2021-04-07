@@ -48,7 +48,8 @@ module AccountControllerPatch
         session[:back_url] = params[:back_url]
         redirect_uri = oauth2_login_callback_url(:provider => params[:provider])
         hash = {:response_type => "code",
-                :client_id => oauth2_settings["client_id"],
+                :scope => "userlogin",
+                :client_key => oauth2_settings["client_id"],
                 :redirect_uri => redirect_uri}
         param_arr = []
         hash.each do |key , val|
@@ -84,11 +85,12 @@ module AccountControllerPatch
         connection = Faraday::Connection.new #oauth2_settings["access_token_uri"].gsub(/\/+$/, '')#, :ssl => {:verify => false} # comment :ssl part is your certificate is OK
         response = connection.post do |req|
           req.url oauth2_settings["access_token_uri"].gsub(/\/+$/, '')
-          req.params["grant_type"] = "authorization_code"
-          req.params["client_id"] = oauth2_settings["client_id"]
-          req.params["client_secret"] = oauth2_settings["client_secret"]
-          req.params["code"] = code
-          req.params["redirect_uri"] = oauth2_login_callback_url(:provider => params[:provider])
+          req.body = '{"grant_type": "authorization_code",
+            "client_id": '+oauth2_settings["client_id"]+'
+            "client_secret": '+oauth2_settings["client_secret"]+'
+            "code": '+code+'
+            "redirect_uri": '+oauth2_login_callback_url(:provider => params[:provider])+'
+          }'
         end
         if "github".casecmp(params[:provider]) == 0
           token = CGI.parse(response.body)['access_token'][0].to_s
