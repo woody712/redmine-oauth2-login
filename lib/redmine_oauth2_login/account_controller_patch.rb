@@ -107,7 +107,7 @@ module AccountControllerPatch
           req.url userInfoUri
         end
         # Profile parse
-        userDetails = JSON.parse(response.body)
+        userDetails = JSON.parse(response.body)["data"]
         
         # if "github".casecmp(params[:provider]) == 0
         # github
