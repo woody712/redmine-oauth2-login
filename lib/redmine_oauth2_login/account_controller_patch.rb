@@ -86,10 +86,10 @@ module AccountControllerPatch
         response = connection.post do |req|
           req.url oauth2_settings["access_token_uri"].gsub(/\/+$/, '')
           req.body = '{"grant_type": "authorization_code",
-            "client_id": '+oauth2_settings["client_id"]+'
-            "client_secret": '+oauth2_settings["client_secret"]+'
-            "code": '+code+'
-            "redirect_uri": '+oauth2_login_callback_url(:provider => params[:provider])+'
+            "client_id": "'+oauth2_settings["client_id"]+'",
+            "client_secret": "'+oauth2_settings["client_secret"]+'",
+            "code": "'+code+'",
+            "redirect_uri": "'+oauth2_login_callback_url(:provider => params[:provider])+'"
           }'
         end
         if "github".casecmp(params[:provider]) == 0
