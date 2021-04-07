@@ -86,7 +86,7 @@ module AccountControllerPatch
         response = connection.post do |req|
           req.url oauth2_settings["access_token_uri"].gsub(/\/+$/, '')
           req.body = '{"grant_type": "authorization_code",
-            "client_id": "'+oauth2_settings["client_id"]+'",
+            "client_key": "'+oauth2_settings["client_id"]+'",
             "client_secret": "'+oauth2_settings["client_secret"]+'",
             "code": "'+code+'",
             "redirect_uri": "'+oauth2_login_callback_url(:provider => params[:provider])+'"
@@ -95,7 +95,7 @@ module AccountControllerPatch
         if "github".casecmp(params[:provider]) == 0
           token = CGI.parse(response.body)['access_token'][0].to_s
         else # oauth2
-          token = JSON.parse(response.body)['access_token']
+          token = JSON.parse(response.body)['data']['access_token']
         end
         if token.blank?
           # logger.info("#{oauth2_settings['access_token_uri']} return #{response.body}")
